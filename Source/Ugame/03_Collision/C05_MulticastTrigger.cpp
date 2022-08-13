@@ -5,7 +5,19 @@
 
 AC05_MulticastTrigger::AC05_MulticastTrigger()
 {
+	CHelpers::CreateComponent<USceneComponent>(this, &Scene, "Scene");
+	CHelpers::CreateComponent<UBoxComponent>(this, &Box, "box", Scene);
+	CHelpers::CreateComponent<UTextRenderComponent>(this, &Text, "Text", Scene);
 
+	Box->SetRelativeScale3D(FVector(3));
+	Box->bHiddenInGame = false;
+
+	Text->SetRelativeLocation(FVector(0, 0, 100));
+	Text->SetRelativeRotation(FRotator(0, 180, 0));
+	Text->SetRelativeScale3D(FVector(2));
+	Text->TextRenderColor = FColor::Red;
+	Text->HorizontalAlignment = EHorizTextAligment::EHTA_Center;
+	Text->Text = FText::FromString(GetName());
 }
 
 void AC05_MulticastTrigger::BeginPlay()

@@ -46,7 +46,7 @@ void AC04_Light::BeginPlay()
 	AC03_Trigger* trigger = Cast<AC03_Trigger>(actors[0]);
 	trigger->OnBoxLightBeginOverlap.BindUFunction(this, "OnLight");
 	trigger->OnBoxLightEndOverlap.BindUFunction(this, "OffLight");
-	trigger->OnBoxLightRandomBeginOverlap.BindUFunction(this, "OnRandomRight");
+	trigger->OnBoxLightRandomBeginOverlap.BindUFunction(this, "OnRandomLight");
 }
 
 void AC04_Light::OnLight()
