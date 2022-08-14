@@ -51,4 +51,14 @@ public:
 
 		*OutClass = asset.Class;
 	}
+
+	template<typename T>
+	static void FindActors(class UWorld* InWorld, TArray<T*>& OutActors)
+	{
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(InWorld, T::StaticClass(), actors);
+		
+		for (AActor* actor : actors)
+			OutActors.Add(Cast<T>(actor));
+	}
 };
