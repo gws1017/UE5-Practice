@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "IRifle.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class UGAME_API ACPlayer : public ACharacter
+class UGAME_API ACPlayer : public ACharacter, public IIRifle
 {
 	GENERATED_BODY()
 private:
@@ -14,6 +15,10 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCameraComponent* Camera;
+
+public:
+	FORCEINLINE class ACRifle* GetRifle() override { return Rifle; }
+
 public:
 	ACPlayer();
 
@@ -35,6 +40,8 @@ private:
 	void OnRunning();
 	void OffRunning();
 
+	void OnRiffle();
+
 public:
 
 	UFUNCTION(BlueprintCallable)
@@ -43,4 +50,7 @@ public:
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+
+private:
+	class ACRifle* Rifle;
 };

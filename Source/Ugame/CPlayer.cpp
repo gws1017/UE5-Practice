@@ -6,6 +6,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 
 #include "CPlayer.h"
+#include "CRifle.h"
 #include "CAnimInstance.h"
 #include "Global.h"
 
@@ -61,6 +62,8 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
 	
+	//총생성
+	Rifle = ACRifle::Spawn(GetWorld(), this);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -82,6 +85,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//키액션
 	PlayerInputComponent->BindAction("Running", EInputEvent::IE_Pressed, this, &ACPlayer::OnRunning);
 	PlayerInputComponent->BindAction("Running", EInputEvent::IE_Released, this, &ACPlayer::OffRunning);
+
+	//RifleInput
+	PlayerInputComponent->BindAction("Rifle", EInputEvent::IE_Pressed, this, &ACPlayer::OnRiffle);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -120,6 +126,17 @@ void ACPlayer::OnRunning()
 void ACPlayer::OffRunning()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 400;
+}
+
+void ACPlayer::OnRiffle()
+{
+	if (Rifle->GetEquipped())
+	{
+		Rifle->UnEquip();
+		return;
+	}
+
+	Rifle->Equip();
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)

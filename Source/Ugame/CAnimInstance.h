@@ -20,6 +20,8 @@ protected:
 	//이렇게 해야 에디터에 나타남
 	UPROPERTY(BlueprintReadOnly, EditAnywhere,Category = "Animation")
 		float Speed;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Animation")
+		bool bEquipped;
 
 public:
 	virtual void NativeBeginPlay() override;

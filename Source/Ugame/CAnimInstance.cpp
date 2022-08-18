@@ -3,6 +3,8 @@
 
 #include "CAnimInstance.h"
 #include "Global.h"
+#include "IRifle.h"
+#include "CRifle.h"
 #include "GameFramework/Character.h"
 
 void UCAnimInstance::NativeBeginPlay()
@@ -21,4 +23,11 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	//size2d 함수는 블루프린트에서 VectorLengthXY임
 	//이름이 다른건 매번 찾아 확인할것
 	Speed = OwnerCharacter->GetVelocity().Size2D();
+
+	IIRifle* rifle = Cast<IIRifle>(OwnerCharacter);
+
+	if (!!rifle)
+	{
+		bEquipped = rifle->GetRifle()->GetEquipped();
+	}
 }
