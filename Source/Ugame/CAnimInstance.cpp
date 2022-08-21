@@ -24,10 +24,13 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	//이름이 다른건 매번 찾아 확인할것
 	Speed = OwnerCharacter->GetVelocity().Size2D();
 
+	Direction = CalculateDirection(OwnerCharacter->GetVelocity(), OwnerCharacter->GetControlRotation());
+
 	IIRifle* rifle = Cast<IIRifle>(OwnerCharacter);
 
 	if (!!rifle)
 	{
 		bEquipped = rifle->GetRifle()->GetEquipped();
+		bAiming = rifle->GetRifle()->GetAiming();
 	}
 }

@@ -50,13 +50,13 @@ void ACRifle::Begin_Equip()
 
 void ACRifle::End_Equip()
 {
-	bEquipped = false;
+	bEquipping = false;
 
 }
 
 void ACRifle::UnEquip()
 {
-	CheckTrue(bEquipped);
+	CheckFalse(bEquipped);
 	CheckTrue(bEquipping);
 
 	bEquipping = true;
@@ -65,7 +65,7 @@ void ACRifle::UnEquip()
 
 void ACRifle::Begin_UnEquip()
 {
-	bEquipped = true;
+	bEquipped = false;
 	//등 붙이기
 	AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), HolsterSocket);
 
@@ -73,7 +73,17 @@ void ACRifle::Begin_UnEquip()
 
 void ACRifle::End_UnEquip()
 {
-	bEquipped = false;
+	bEquipping = false;
+}
+
+void ACRifle::Begin_Aiming()
+{
+	bAiming = true;
+}
+
+void ACRifle::End_Aiming()
+{
+	bAiming = false;
 }
 
 

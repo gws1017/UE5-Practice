@@ -27,6 +27,8 @@ public:
 
 public:
 	FORCEINLINE bool GetEquipped() { return bEquipped; }
+	FORCEINLINE bool GetEquipping() { return bEquipping; }
+	FORCEINLINE bool GetAiming() { return bAiming; }
 
 public:	
 
@@ -39,6 +41,10 @@ public:
 	void UnEquip();
 	void Begin_UnEquip();
 	void End_UnEquip();
+
+	void Begin_Aiming();
+	void End_Aiming();
+
 
 protected:
 
@@ -53,4 +59,5 @@ private:
 
 	bool bEquipped;
 	bool bEquipping;
+	bool bAiming;
 };
