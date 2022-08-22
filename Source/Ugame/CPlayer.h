@@ -10,6 +10,13 @@ class UGAME_API ACPlayer : public ACharacter, public IIRifle
 {
 	GENERATED_BODY()
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<class UCUserWidget_CrossHair> CrossHairClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<class UMatineeCameraShake> CameraShakeClass;
+
+
+private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USpringArmComponent* SpringArm;
 
@@ -29,6 +36,8 @@ public:
 public:
 	ACPlayer();
 
+	virtual void GetLocationAndDirection(FVector& OutStart, FVector& OutEnd, FVector& OutDirection) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -36,6 +45,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void OnFocus() override;
+	void OffFocus() override;
+
+	void PlayCameraShake();
+
 private:
 
 	void OnMoveForward(float Axis);
@@ -52,6 +66,9 @@ private:
 	void OnAim();
 	void OffAim();
 
+	void OnFire();
+	void OffFire();
+
 public:
 
 	UFUNCTION(BlueprintCallable)
@@ -63,4 +80,5 @@ private:
 
 private:
 	class ACRifle* Rifle;
+	class UCUserWidget_CrossHair* CrossHair;
 };

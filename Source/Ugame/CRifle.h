@@ -21,6 +21,8 @@ private:
 		class UAnimMontage* GrabMontage;
 	UPROPERTY(VisibleDefaultsOnly, Category = "Rifle")
 		class UAnimMontage* UnGrabMontage;
+	UPROPERTY(VisibleDefaultsOnly, Category = "Rifle")
+		class UAnimMontage* FireMontage;
 
 public:
 	static ACRifle* Spawn(class UWorld* InWorld, class ACharacter* InOwner);
@@ -45,6 +47,9 @@ public:
 	void Begin_Aiming();
 	void End_Aiming();
 
+	void Begin_Fire();
+	void Firing();
+	void End_Fire();
 
 protected:
 
@@ -60,4 +65,5 @@ private:
 	bool bEquipped;
 	bool bEquipping;
 	bool bAiming;
+	bool bFiring;
 };
