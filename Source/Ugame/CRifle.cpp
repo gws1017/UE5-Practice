@@ -1,6 +1,7 @@
 #include "CRifle.h"
 #include "IRifle.h"
 #include "CPlayer.h"
+#include "CBullet.h"
 #include "Global.h"
 
 #include "Engine/World.h"
@@ -8,6 +9,9 @@
 #include "Animation/AnimMontage.h"
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
 //팩토리구조
 //스폰한다.
 
@@ -32,6 +36,15 @@ ACRifle::ACRifle()
 	CHelpers::GetAsset<UAnimMontage>(&GrabMontage, "AnimMontage'/Game/Character/Montage/Rifle_Grab_Montage.Rifle_Grab_Montage'");
 	CHelpers::GetAsset<UAnimMontage>(&UnGrabMontage, "AnimMontage'/Game/Character/Montage/Rifle_UnGrab_Montage.Rifle_UnGrab_Montage'");
 	CHelpers::GetAsset<UAnimMontage>(&FireMontage, "AnimMontage'/Game/Character/Montage/Rifle_Fire_Montage.Rifle_Fire_Montage'");
+	
+	CHelpers::GetAsset<UParticleSystem>(&FlashParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Muzzleflash.VFX_Muzzleflash'");
+	CHelpers::GetAsset<UParticleSystem>(&EjectParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Eject_bullet.VFX_Eject_bullet'");
+	CHelpers::GetAsset<UParticleSystem>(&ImpactParticle, "ParticleSystem'/Game/Particles_Rifle/Particles/VFX_Impact_Default.VFX_Impact_Default'");
+	CHelpers::GetAsset<USoundCue>(&FireSoundCue, "SoundCue'/Game/RifleSound/S_RifleShoot_Cue.S_RifleShoot_Cue'");
+	CHelpers::GetAsset<UMaterialInstanceConstant>(&DecalMaterial, "MaterialInstanceConstant'/Game/Decal/M_Decal_Inst.M_Decal_Inst'");
+
+	CHelpers::GetClass<ACBullet>(&BulletClass, "Blueprint'/Game/BP_CBullet.BP_CBullet_C'");
+
 }
 
 void ACRifle::Equip()
@@ -109,16 +122,37 @@ void ACRifle::Firing()
 
 	rifle->GetLocationAndDirection(start, end, direction);
 
-	//OwnerCharacter->PlayAnimMontage(FireMontage);
+	OwnerCharacter->PlayAnimMontage(FireMontage);
 
 	ACPlayer* player = Cast<ACPlayer>(OwnerCharacter);
 	if (!!player)
 		player->PlayCameraShake();
 
+	UGameplayStatics::SpawnEmitterAttached(FlashParticle,Mesh, "MuzzleFlash",FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::KeepRelativeOffset);
+	UGameplayStatics::SpawnEmitterAttached(EjectParticle,Mesh, "EjectBullet",FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::KeepRelativeOffset);
+
+	FVector muzzleLocation = Mesh->GetSocketLocation("MuzzleFlash");
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSoundCue, muzzleLocation);
+
+	if (!!BulletClass)
+		GetWorld()->SpawnActor<ACBullet>(BulletClass, muzzleLocation, direction.Rotation());
+
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(this);
 	params.AddIgnoredActor(OwnerCharacter);
 	FHitResult hitResult;
+
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, params))
+	{
+		//어딘가에 탄을 솨서 맞은곳은 삼각형으로 되어잇음
+		//충돌체의 수직방향이 있다
+		//보통 물체의 정면에 있고, 수직벡터를 노멀벡터라고한다
+		//Impactnormal은 맞은 충돌체 수직방향
+		FRotator rotator = hitResult.ImpactNormal.Rotation();
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticle, hitResult.Location, rotator, FVector(2));
+		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), DecalMaterial, FVector(5), hitResult.Location, rotator, 10.0f);
+	}
 
 	//충돌 검사
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_WorldDynamic, params))
